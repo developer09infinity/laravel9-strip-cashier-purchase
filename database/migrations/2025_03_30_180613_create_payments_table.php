@@ -18,12 +18,11 @@ return new class extends Migration
             $table->string('stripe_payment_id');
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
             $table->dateTime('payment_date')->default(now());
-            $table->enum('status', ['pending', 'success', 'failed'])->default('pending');
+            $table->enum('status', ['pending', 'completed', 'failed', 'succeeded'])->default('pending');
             $table->decimal('amount', 10, 2);
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      *
@@ -31,6 +30,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('payments');
+        Schema::table('payments', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+            $table->dropColumn('user_id');
+        });
     }
 };
